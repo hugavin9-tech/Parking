@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>停车入库 - 小游戏</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="hud">
+    <div class="title">停车入库</div>
+    <div class="info">
+      <span id="level">关卡: 1</span>
+      <span id="status">准备开始</span>
+    </div>
+    <div class="controls">
+      方向键/WASD 控制，空格刹车；成功按 N/回车 继续，失败按 R 重试
+    </div>
+  </div>
+  <div class="stage">
+    <canvas id="game" width="900" height="600"></canvas>
+    <canvas id="fpv" width="260" height="260" aria-label="驾驶视角"></canvas>
+  </div>
+  <div id="overlay" class="overlay">
+    <div class="card">
+      <div class="title" id="ov-title">结算</div>
+      <div class="desc" id="ov-desc"></div>
+      <div class="row"><span class="label">用时</span><span class="value" id="ov-time">0.0s</span></div>
+      <div class="row"><span class="label">碰撞次数</span><span class="value" id="ov-hit">0</span></div>
+      <div class="row"><span class="label">分数</span><span class="value" id="ov-score">0</span></div>
+      <div class="row"><span class="label">评级</span><span class="value" id="ov-grade">-</span></div>
+      <div class="actions">
+        <button class="btn" id="btn-retry">重试 (R)</button>
+        <button class="btn primary" id="btn-next">继续 (Enter/N)</button>
+      </div>
+    </div>
+  </div>
+  <script src="./game.js"></script>
+</body>
+</html>
+
