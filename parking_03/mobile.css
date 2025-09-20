@@ -1,0 +1,571 @@
+/* 移动端专用样式 - 优化小屏幕竖屏体验 */
+
+/* 基础变量 */
+:root {
+  --mobile-header-height: 48px;
+  --mobile-bottom-height: clamp(160px, 25vh, 200px);
+  --mobile-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --mobile-font-size-title: clamp(14px, 2.5vw, 18px);
+  --mobile-font-size-text: clamp(12px, 2vw, 16px);
+  --mobile-font-size-small: clamp(10px, 1.8vw, 14px);
+  --mobile-spacing-xs: clamp(4px, 1vw, 8px);
+  --mobile-spacing-sm: clamp(8px, 2vw, 12px);
+  --mobile-spacing-md: clamp(12px, 3vw, 16px);
+  --mobile-spacing-lg: clamp(16px, 4vw, 24px);
+  --mobile-touch-target: 48px;
+  --mobile-steering-size: clamp(160px, 36vw, 220px);
+}
+
+/* 移动端布局容器 */
+.mobile-layout {
+  display: flex !important;
+  height: 100vh;
+  flex-direction: column;
+  background: #0e0f12;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  width: 100vw;
+}
+
+/* 移动端Header */
+.mobile-header {
+  height: var(--mobile-header-height);
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 2px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--mobile-spacing-md);
+  z-index: 1000;
+  position: relative;
+}
+
+.mobile-game-info {
+  display: flex;
+  align-items: center;
+  gap: var(--mobile-spacing-sm);
+  flex: 1;
+}
+
+.mobile-title {
+  font-size: var(--mobile-font-size-title);
+  font-weight: 900;
+  color: #000;
+  text-transform: uppercase;
+}
+
+.mobile-level,
+.mobile-status {
+  font-size: var(--mobile-font-size-small);
+  color: #000;
+  font-weight: 600;
+}
+
+.mobile-settings-btn {
+  width: var(--mobile-touch-target);
+  height: var(--mobile-touch-target);
+  border: 2px solid #000;
+  background: #fff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-settings-btn:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.mobile-settings-btn:active {
+  transform: scale(0.95);
+}
+
+/* 游戏画布区域 */
+.game-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: #0e0f12;
+}
+
+.game-stage canvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  background: #1a1d24;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: block;
+}
+
+/* 移动端底部操作区 */
+.mobile-bottom-bar {
+  height: var(--mobile-bottom-height);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--mobile-spacing-md);
+  padding-bottom: max(var(--mobile-spacing-md), var(--mobile-safe-area-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-spacing-md);
+  z-index: 1000;
+  position: relative;
+}
+
+/* 状态卡片 */
+.mobile-status-card {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  padding: var(--mobile-spacing-sm);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-status-card .status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.mobile-status-card .status-label {
+  font-size: var(--mobile-font-size-small);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.mobile-status-card .status-value {
+  font-size: var(--mobile-font-size-text);
+  color: #fff;
+  font-weight: 700;
+}
+
+.mobile-status-card .status-value.forward { color: #28a745; }
+.mobile-status-card .status-value.reverse { color: #ffc107; }
+.mobile-status-card .status-value.braking { color: #dc3545; }
+
+/* 操作控制区 */
+.mobile-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mobile-spacing-md);
+  flex: 1;
+}
+
+/* 方向盘 */
+.mobile-steering {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-steering .steering-wheel {
+  width: var(--mobile-steering-size);
+  height: var(--mobile-steering-size);
+  border-radius: 50%;
+  background: url('./assets/wheel.png') center/cover no-repeat;
+  background-color: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: transform 0.1s ease-out;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-steering .steering-wheel:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+
+.mobile-steering .steering-center {
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+/* 踏板控制 */
+.mobile-pedals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-spacing-sm);
+  flex: 1;
+  max-width: 200px;
+}
+
+.pedal-row {
+  display: flex;
+  gap: var(--mobile-spacing-sm);
+  justify-content: center;
+}
+
+.mobile-pedal {
+  min-width: var(--mobile-touch-target);
+  min-height: var(--mobile-touch-target);
+  border: 2px solid #000;
+  border-radius: 12px;
+  font-size: var(--mobile-font-size-text);
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mobile-spacing-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-pedal:active {
+  transform: scale(0.95);
+}
+
+.gas-pedal {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: #fff;
+  border-color: #1e7e34;
+}
+
+.gas-pedal:active {
+  background: linear-gradient(135deg, #1e7e34, #17a2b8);
+}
+
+.brake-pedal {
+  background: linear-gradient(135deg, #dc3545, #fd7e14);
+  color: #fff;
+  border-color: #c82333;
+}
+
+.brake-pedal:active {
+  background: linear-gradient(135deg, #c82333, #e0a800);
+}
+
+.reverse-pedal {
+  background: linear-gradient(135deg, #ffc107, #fd7e14);
+  color: #333;
+  border-color: #e0a800;
+  width: 100%;
+}
+
+.reverse-pedal:active {
+  background: linear-gradient(135deg, #e0a800, #d39e00);
+}
+
+/* 移动端设置抽屉 */
+.mobile-settings-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-settings-drawer.show {
+  display: flex;
+  opacity: 1;
+}
+
+.drawer-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.drawer-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-left: 2px solid #000;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.mobile-settings-drawer.show .drawer-content {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  padding: var(--mobile-spacing-md);
+  border-bottom: 2px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-header h3 {
+  font-size: var(--mobile-font-size-title);
+  font-weight: 900;
+  color: #000;
+  margin: 0;
+}
+
+.drawer-close {
+  width: var(--mobile-touch-target);
+  height: var(--mobile-touch-target);
+  border: 2px solid #000;
+  background: #fff;
+  border-radius: 8px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.drawer-close:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.drawer-body {
+  padding: var(--mobile-spacing-md);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-spacing-lg);
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mobile-spacing-sm);
+}
+
+.setting-group label {
+  font-size: var(--mobile-font-size-text);
+  font-weight: 600;
+  color: #000;
+}
+
+.setting-btn {
+  padding: var(--mobile-spacing-sm) var(--mobile-spacing-md);
+  border: 2px solid #000;
+  background: #fff;
+  color: #000;
+  border-radius: 8px;
+  font-size: var(--mobile-font-size-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.setting-btn:hover {
+  background: #f0f0f0;
+  transform: scale(1.02);
+}
+
+.setting-btn:active {
+  transform: scale(0.98);
+}
+
+.setting-btn.playing {
+  background: #000;
+  color: #fff;
+}
+
+.setting-btn.muted {
+  background: #ff0000;
+  color: #fff;
+  border-color: #ff0000;
+}
+
+/* 响应式断点 */
+@media (max-width: 1024px) {
+  .top-hud {
+    display: none !important;
+  }
+  
+  .game-container {
+    display: none !important;
+  }
+  
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --mobile-steering-size: clamp(140px, 32vw, 180px);
+    --mobile-bottom-height: clamp(140px, 22vh, 180px);
+  }
+  
+  .mobile-pedals {
+    max-width: 160px;
+  }
+  
+  .mobile-pedal {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: var(--mobile-font-size-small);
+    padding: var(--mobile-spacing-xs);
+  }
+}
+
+/* 横屏适配 */
+@media (max-width: 1024px) and (orientation: landscape) {
+  .mobile-layout {
+    flex-direction: row;
+  }
+  
+  .mobile-header {
+    width: 200px;
+    height: 100%;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: var(--mobile-spacing-md);
+  }
+  
+  .mobile-game-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--mobile-spacing-xs);
+  }
+  
+  .game-stage {
+    flex: 1;
+    height: 100vh;
+  }
+  
+  .mobile-bottom-bar {
+    width: 200px;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .mobile-controls {
+    flex-direction: column;
+    gap: var(--mobile-spacing-md);
+  }
+  
+  .mobile-steering {
+    order: 2;
+  }
+  
+  .mobile-pedals {
+    order: 1;
+    max-width: none;
+    width: 100%;
+  }
+  
+  .pedal-row {
+    flex-direction: column;
+    gap: var(--mobile-spacing-xs);
+  }
+  
+  .mobile-pedal {
+    width: 100%;
+    min-height: 40px;
+  }
+}
+
+/* 触控优化 */
+@media (hover: none) and (pointer: coarse) {
+  .mobile-pedal:hover {
+    transform: none;
+  }
+  
+  .mobile-pedal:active {
+    transform: scale(0.95);
+  }
+  
+  .mobile-steering .steering-wheel:hover {
+    transform: none;
+  }
+  
+  .mobile-steering .steering-wheel:active {
+    transform: scale(1.05);
+  }
+}
+
+/* 高DPI屏幕优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .mobile-steering .steering-wheel {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* 暗色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .mobile-header {
+    background: rgba(0, 0, 0, 0.95);
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .mobile-title,
+  .mobile-level,
+  .mobile-status {
+    color: #fff;
+  }
+  
+  .mobile-settings-btn {
+    background: #333;
+    border-color: #666;
+    color: #fff;
+  }
+  
+  .drawer-content {
+    background: rgba(0, 0, 0, 0.95);
+    border-left-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .drawer-header h3 {
+    color: #fff;
+  }
+  
+  .drawer-close {
+    background: #333;
+    border-color: #666;
+    color: #fff;
+  }
+  
+  .setting-btn {
+    background: #333;
+    border-color: #666;
+    color: #fff;
+  }
+}

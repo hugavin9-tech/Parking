@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>移动端布局测试</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./mobile.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0e0f12;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 9999;
+        }
+        
+        .test-controls {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            z-index: 9999;
+        }
+        
+        .test-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .test-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-info">
+        <div>屏幕尺寸: <span id="screen-size"></span></div>
+        <div>设备像素比: <span id="device-ratio"></span></div>
+        <div>方向: <span id="orientation"></span></div>
+        <div>触控支持: <span id="touch-support"></span></div>
+    </div>
+    
+    <div class="test-controls">
+        <button class="test-btn" onclick="toggleLayout()">切换布局</button>
+        <button class="test-btn" onclick="testSteering()">测试方向盘</button>
+        <button class="test-btn" onclick="testPedals()">测试踏板</button>
+        <button class="test-btn" onclick="testSettings()">测试设置</button>
+    </div>
+    
+    <!-- 移动端布局容器 -->
+    <div class="mobile-layout">
+        <!-- 移动端Header -->
+        <header class="mobile-header">
+            <div class="mobile-game-info">
+                <div class="mobile-title">停车入库</div>
+                <div class="mobile-level" id="mobile-level">关卡: 1</div>
+                <div class="mobile-status" id="mobile-status">准备开始</div>
+            </div>
+            <button class="mobile-settings-btn" id="mobile-settings-btn" aria-label="设置">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" fill="currentColor"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- 游戏画布区域 -->
+        <div class="game-stage">
+            <div style="width: 100%; height: 100%; background: linear-gradient(45deg, #1a1d24, #2a2f39); display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                <div style="color: white; font-size: 24px; text-align: center;">
+                    <div>游戏画布区域</div>
+                    <div style="font-size: 16px; margin-top: 10px; opacity: 0.7;">1280×720 等比缩放</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 移动端底部操作区 -->
+        <div class="mobile-bottom-bar">
+            <!-- 状态卡片 -->
+            <div class="mobile-status-card">
+                <div class="status-item">
+                    <div class="status-label">速度</div>
+                    <div class="status-value" id="mobile-speed-display">0.0 km/h</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">档位</div>
+                    <div class="status-value" id="mobile-gear-display">D</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">状态</div>
+                    <div class="status-value" id="mobile-direction-display">静止</div>
+                </div>
+            </div>
+
+            <!-- 操作控制区 -->
+            <div class="mobile-controls">
+                <!-- 方向盘 -->
+                <div class="mobile-steering">
+                    <div class="steering-wheel" id="mobile-steering-wheel" aria-label="方向盘">
+                        <div class="steering-center"></div>
+                    </div>
+                </div>
+                
+                <!-- 踏板控制 -->
+                <div class="mobile-pedals">
+                    <div class="pedal-row">
+                        <button class="mobile-pedal gas-pedal" id="mobile-gas-pedal" aria-label="油门">油门</button>
+                        <button class="mobile-pedal brake-pedal" id="mobile-brake-pedal" aria-label="刹车">刹车</button>
+                    </div>
+                    <div class="pedal-row">
+                        <button class="mobile-pedal reverse-pedal" id="mobile-reverse-pedal" aria-label="倒车">倒车</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 移动端设置抽屉 -->
+    <div class="mobile-settings-drawer" id="mobile-settings-drawer">
+        <div class="drawer-overlay" id="drawer-overlay"></div>
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <h3>设置</h3>
+                <button class="drawer-close" id="drawer-close">×</button>
+            </div>
+            <div class="drawer-body">
+                <div class="setting-group">
+                    <label>音量</label>
+                    <input type="range" id="mobile-volume-slider" min="0" max="100" value="50" class="volume-slider">
+                </div>
+                <div class="setting-group">
+                    <button id="mobile-music-toggle" class="setting-btn">🎵 音乐</button>
+                    <button id="mobile-sound-toggle" class="setting-btn">🔊 音效</button>
+                    <button id="mobile-test-sound" class="setting-btn">🔊 测试</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 更新屏幕信息
+        function updateScreenInfo() {
+            document.getElementById('screen-size').textContent = `${window.innerWidth}×${window.innerHeight}`;
+            document.getElementById('device-ratio').textContent = window.devicePixelRatio;
+            document.getElementById('orientation').textContent = window.innerWidth > window.innerHeight ? '横屏' : '竖屏';
+            document.getElementById('touch-support').textContent = 'ontouchstart' in window ? '是' : '否';
+        }
+        
+        // 测试功能
+        function toggleLayout() {
+            const mobileLayout = document.querySelector('.mobile-layout');
+            mobileLayout.style.display = mobileLayout.style.display === 'none' ? 'flex' : 'none';
+        }
+        
+        function testSteering() {
+            const steering = document.getElementById('mobile-steering-wheel');
+            steering.style.transform = 'rotate(45deg)';
+            setTimeout(() => {
+                steering.style.transform = 'rotate(0deg)';
+            }, 1000);
+        }
+        
+        function testPedals() {
+            const pedals = document.querySelectorAll('.mobile-pedal');
+            pedals.forEach((pedal, index) => {
+                setTimeout(() => {
+                    pedal.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        pedal.style.transform = 'scale(1)';
+                    }, 200);
+                }, index * 200);
+            });
+        }
+        
+        function testSettings() {
+            const drawer = document.getElementById('mobile-settings-drawer');
+            drawer.classList.add('show');
+            setTimeout(() => {
+                drawer.classList.remove('show');
+            }, 3000);
+        }
+        
+        // 初始化
+        updateScreenInfo();
+        window.addEventListener('resize', updateScreenInfo);
+        window.addEventListener('orientationchange', updateScreenInfo);
+        
+        // 设置抽屉交互
+        const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
+        const mobileSettingsDrawer = document.getElementById('mobile-settings-drawer');
+        const drawerOverlay = document.getElementById('drawer-overlay');
+        const drawerClose = document.getElementById('drawer-close');
+        
+        mobileSettingsBtn.addEventListener('click', () => {
+            mobileSettingsDrawer.classList.add('show');
+        });
+        
+        drawerOverlay.addEventListener('click', () => {
+            mobileSettingsDrawer.classList.remove('show');
+        });
+        
+        drawerClose.addEventListener('click', () => {
+            mobileSettingsDrawer.classList.remove('show');
+        });
+        
+        // 方向盘交互
+        const steeringWheel = document.getElementById('mobile-steering-wheel');
+        let isDragging = false;
+        let lastAngle = 0;
+        
+        steeringWheel.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            isDragging = true;
+            lastAngle = Math.atan2(e.clientY - steeringWheel.offsetTop - steeringWheel.offsetHeight/2, 
+                                 e.clientX - steeringWheel.offsetLeft - steeringWheel.offsetWidth/2);
+        });
+        
+        steeringWheel.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const currentAngle = Math.atan2(e.clientY - steeringWheel.offsetTop - steeringWheel.offsetHeight/2, 
+                                          e.clientX - steeringWheel.offsetLeft - steeringWheel.offsetWidth/2);
+            const delta = currentAngle - lastAngle;
+            const rotation = (steeringWheel.style.transform.match(/rotate\(([^)]+)\)/) || ['', '0'])[1];
+            const currentRotation = parseFloat(rotation) || 0;
+            steeringWheel.style.transform = `rotate(${currentRotation + delta * 180 / Math.PI}deg)`;
+            lastAngle = currentAngle;
+        });
+        
+        steeringWheel.addEventListener('pointerup', () => {
+            isDragging = false;
+        });
+        
+        // 踏板交互
+        const pedals = document.querySelectorAll('.mobile-pedal');
+        pedals.forEach(pedal => {
+            pedal.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                pedal.style.transform = 'scale(0.95)';
+                pedal.style.opacity = '0.8';
+            });
+            
+            pedal.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                pedal.style.transform = 'scale(1)';
+                pedal.style.opacity = '1';
+            });
+        });
+    </script>
+</body>
+</html>

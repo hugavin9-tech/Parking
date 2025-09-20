@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单图片测试</title>
+    <style>
+        body {
+            background: #0e0f12;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-image {
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: url('./assets/wheel.png') center/cover no-repeat;
+            border: 2px solid white;
+            margin: 20px;
+        }
+        
+        .test-image-alt {
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background-image: url('./assets/wheel.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: 2px solid white;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>简单图片测试</h1>
+    <p>如果看到方向盘图片，说明图片加载成功</p>
+    
+    <div class="test-image"></div>
+    <div class="test-image-alt"></div>
+    
+    <p>如果两个圆形都显示图片，说明CSS设置正确</p>
+    <p>如果都不显示图片，说明图片路径有问题</p>
+</body>
+</html>
