@@ -10,16 +10,21 @@
   <div class="hud">
     <div class="title">停车入库</div>
     <div class="info">
-      <span id="level">关卡: 1</span>
-      <span id="status">准备开始</span>
+      <div id="level">关卡: 1</div>
+      <div id="status">准备开始</div>
     </div>
     <div class="controls">
-      方向键/WASD 控制，空格刹车；成功按 N/回车 继续，失败按 R 重试
+      方向键/WASD 控制，空格刹车<br>
+      成功按 N/回车 继续，失败按 R 重试
+    </div>
+    <div class="music-controls">
+      <button id="music-toggle" class="music-btn">🎵 音乐</button>
+      <input type="range" id="volume-slider" min="0" max="100" value="50" class="volume-slider">
     </div>
   </div>
-  <div class="stage">
-    <canvas id="game" width="900" height="600"></canvas>
-    <canvas id="fpv" width="260" height="260" aria-label="驾驶视角"></canvas>
+  <div class="game-container">
+    <canvas id="game" width="1280" height="720"></canvas>
+    <canvas id="fpv" width="300" height="300" aria-label="驾驶视角"></canvas>
   </div>
   <div id="overlay" class="overlay">
     <div class="card">

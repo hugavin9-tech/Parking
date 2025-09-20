@@ -22,16 +22,77 @@
     retry: document.getElementById('btn-retry'),
   };
 
-  const scene = { width: canvas.width, height: canvas.height, wallPadding: 20 };
+  const scene = { width: 1280, height: 720, wallPadding: 30 };
+  
+  // Background image
+  let backgroundImage = null;
+  
+  // Load background image
+  const bgImg = new Image();
+  bgImg.onload = () => {
+    backgroundImage = bgImg;
+    console.log('Background image loaded successfully');
+  };
+  bgImg.onerror = () => {
+    console.log('Background image not found, using default');
+  };
+  bgImg.src = './assets/background.png';
+  
+  // Background music
+  let backgroundMusic = null;
+  let musicPlaying = false;
+  let userInteracted = false;
+  
+  // Load background music
+  const music = new Audio();
+  music.src = './assets/parking.mp3';
+  music.loop = true;
+  music.volume = 0.5;
+  music.preload = 'auto';
+  
+  music.addEventListener('canplaythrough', () => {
+    backgroundMusic = music;
+    console.log('Background music loaded successfully');
+  });
+  
+  music.addEventListener('error', (e) => {
+    console.log('Background music not found:', e);
+  });
+  
+  // Enable audio after user interaction
+  function enableAudio() {
+    if (!userInteracted && backgroundMusic) {
+      userInteracted = true;
+      try {
+        backgroundMusic.play().then(() => {
+          musicPlaying = true;
+          const musicToggle = document.getElementById('music-toggle');
+          if (musicToggle) {
+            musicToggle.textContent = '🔊 播放中';
+            musicToggle.classList.add('playing');
+          }
+        }).catch(e => {
+          console.log('Audio play failed:', e);
+        });
+      } catch (e) {
+        console.log('Audio not supported');
+      }
+    }
+  }
 
   const keys = new Set();
   window.addEventListener('keydown', (e) => {
     if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
     keys.add(e.key.toLowerCase());
+    enableAudio(); // Enable audio on first key press
   });
   window.addEventListener('keyup', (e) => {
     keys.delete(e.key.toLowerCase());
   });
+  
+  // Enable audio on any user interaction
+  document.addEventListener('click', enableAudio);
+  document.addEventListener('touchstart', enableAudio);
 
   function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -150,14 +211,14 @@
     // Randomly select target spot
     targetSpotIndex = Math.floor(rand01() * 5);
     // Reset car
-    car.x = scene.width * 0.15;
+    car.x = scene.width * 0.12;
     car.y = scene.height * 0.5;
     car.angle = 0;
     car.v = 0;
     // Generate 5 spots across the right side
-    const baseX = scene.width - 220;
-    const baseY = 100;
-    const gapY = 85;
+    const baseX = scene.width - 280;
+    const baseY = 120;
+    const gapY = 100;
     spots = new Array(5).fill(0).map((_, i) => ({
       x: baseX + (i % 2 === 0 ? 0 : 70 * Math.sin(level)),
       y: baseY + i * gapY,
@@ -177,8 +238,8 @@
     let attempts = 0;
     while (monsters.length < monsterCount && attempts < 200) {
       attempts++;
-      const mx = 200 + rand01() * 500; // avoid edges
-      const my = 100 + rand01() * 400;
+      const mx = 250 + rand01() * 600; // avoid edges
+      const my = 120 + rand01() * 480;
       const w = 40 + rand01() * 30;
       const h = 40 + rand01() * 30;
       const candidate = { 
@@ -294,8 +355,8 @@
       
       // Choose new target every 2-4 seconds
       if (m.patrolTimer > 2 + rand01() * 2) {
-        m.targetX = 200 + rand01() * 500;
-        m.targetY = 100 + rand01() * 400;
+        m.targetX = 250 + rand01() * 600;
+        m.targetY = 120 + rand01() * 480;
         m.patrolTimer = 0;
       }
       
@@ -317,8 +378,8 @@
       }
       
       // Keep monsters in bounds
-      m.x = clamp(m.x, 50, scene.width - 50);
-      m.y = clamp(m.y, 50, scene.height - 50);
+      m.x = clamp(m.x, 80, scene.width - 80);
+      m.y = clamp(m.y, 80, scene.height - 80);
     }
 
     // Acceleration
@@ -408,6 +469,35 @@
     // Clear
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Draw background
+    if (backgroundImage) {
+      // Scale background to fit canvas while maintaining aspect ratio
+      const canvasAspect = canvas.width / canvas.height;
+      const imageAspect = backgroundImage.width / backgroundImage.height;
+      
+      let drawWidth, drawHeight, drawX, drawY;
+      
+      if (canvasAspect > imageAspect) {
+        // Canvas is wider, fit to height
+        drawHeight = canvas.height;
+        drawWidth = drawHeight * imageAspect;
+        drawX = (canvas.width - drawWidth) / 2;
+        drawY = 0;
+      } else {
+        // Canvas is taller, fit to width
+        drawWidth = canvas.width;
+        drawHeight = drawWidth / imageAspect;
+        drawX = 0;
+        drawY = (canvas.height - drawHeight) / 2;
+      }
+      
+      ctx.drawImage(backgroundImage, drawX, drawY, drawWidth, drawHeight);
+    } else {
+      // Default background
+      ctx.fillStyle = '#1a1d24';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
     // Scene boundaries
     ctx.save();
     ctx.strokeStyle = '#2a3140';
@@ -421,11 +511,11 @@
       fpv.clearRect(0, 0, w, h);
       
       // Background
-      fpv.fillStyle = '#1a1d24';
+      fpv.fillStyle = '#f8f9fa';
       fpv.fillRect(0, 0, w, h);
       
       // Dashboard background
-      fpv.fillStyle = '#2a2f39';
+      fpv.fillStyle = '#e9ecef';
       fpv.fillRect(10, 10, w - 20, h - 20);
       
       // Steering wheel
@@ -434,11 +524,11 @@
       // Wheel shadow
       fpv.beginPath();
       fpv.arc(0, 0, 80, 0, Math.PI * 2);
-      fpv.fillStyle = '#0f1319';
+      fpv.fillStyle = '#dee2e6';
       fpv.fill();
       // Outer wheel ring
       fpv.lineWidth = 18;
-      fpv.strokeStyle = '#3d4658';
+      fpv.strokeStyle = '#495057';
       fpv.beginPath();
       fpv.arc(0, 0, 70, 0, Math.PI * 2);
       fpv.stroke();
@@ -446,7 +536,7 @@
       fpv.rotate(steeringAngle);
       // Spokes
       fpv.lineWidth = 8;
-      fpv.strokeStyle = '#4a5568';
+      fpv.strokeStyle = '#6c757d';
       for (let i = 0; i < 3; i++) {
         fpv.save();
         fpv.rotate((i * Math.PI * 2) / 3);
@@ -457,7 +547,7 @@
         fpv.restore();
       }
       // Center hub
-      fpv.fillStyle = '#2d3748';
+      fpv.fillStyle = '#343a40';
       fpv.beginPath();
       fpv.arc(0, 0, 20, 0, Math.PI * 2);
       fpv.fill();
@@ -471,13 +561,13 @@
       // Gas pedal (right)
       const gasX = w - 50;
       const gasPressed = gasPedalPos * 8;
-      fpv.fillStyle = gasPedalPos > 0.1 ? '#4ade80' : '#4a5568';
+      fpv.fillStyle = gasPedalPos > 0.1 ? '#28a745' : '#6c757d';
       fpv.fillRect(gasX, pedalY + gasPressed, pedalW, pedalH);
-      fpv.strokeStyle = '#2d3748';
+      fpv.strokeStyle = '#495057';
       fpv.lineWidth = 2;
       fpv.strokeRect(gasX, pedalY + gasPressed, pedalW, pedalH);
       // Gas pedal label
-      fpv.fillStyle = '#e2e8f0';
+      fpv.fillStyle = '#000000';
       fpv.font = '10px sans-serif';
       fpv.textAlign = 'center';
       fpv.fillText('油门', gasX + pedalW/2, pedalY - 5);
@@ -485,13 +575,13 @@
       // Brake pedal (left)
       const brakeX = 50;
       const brakePressed = brakePedalPos * 8;
-      fpv.fillStyle = brakePedalPos > 0.1 ? '#ef4444' : '#4a5568';
+      fpv.fillStyle = brakePedalPos > 0.1 ? '#dc3545' : '#6c757d';
       fpv.fillRect(brakeX, pedalY + brakePressed, pedalW, pedalH);
-      fpv.strokeStyle = '#2d3748';
+      fpv.strokeStyle = '#495057';
       fpv.lineWidth = 2;
       fpv.strokeRect(brakeX, pedalY + brakePressed, pedalW, pedalH);
       // Brake pedal label
-      fpv.fillStyle = '#e2e8f0';
+      fpv.fillStyle = '#000000';
       fpv.font = '10px sans-serif';
       fpv.textAlign = 'center';
       fpv.fillText('刹车', brakeX + pedalW/2, pedalY - 5);
@@ -499,13 +589,13 @@
       // Gear indicator
       const gearX = w / 2 - 25;
       const gearY = h - 80;
-      fpv.fillStyle = reverseGearActive ? '#f59e0b' : '#4a5568';
+      fpv.fillStyle = reverseGearActive ? '#ffc107' : '#6c757d';
       fpv.fillRect(gearX, gearY, 50, 30);
-      fpv.strokeStyle = '#2d3748';
+      fpv.strokeStyle = '#495057';
       fpv.lineWidth = 2;
       fpv.strokeRect(gearX, gearY, 50, 30);
       // Gear text
-      fpv.fillStyle = '#e2e8f0';
+      fpv.fillStyle = '#000000';
       fpv.font = 'bold 12px sans-serif';
       fpv.textAlign = 'center';
       fpv.fillText(reverseGearActive ? 'R' : 'D', gearX + 25, gearY + 20);
@@ -518,21 +608,21 @@
       const speedPercent = Math.abs(car.v) / carParams.maxSpeed;
       
       // Speed bar background
-      fpv.fillStyle = '#2d3748';
+      fpv.fillStyle = '#dee2e6';
       fpv.fillRect(speedBarX, speedBarY, speedBarW, speedBarH);
       
       // Speed bar fill
       const speedHeight = speedPercent * speedBarH;
-      fpv.fillStyle = car.v > 0 ? '#4ade80' : (car.v < 0 ? '#f59e0b' : '#4a5568');
+      fpv.fillStyle = car.v > 0 ? '#28a745' : (car.v < 0 ? '#ffc107' : '#6c757d');
       fpv.fillRect(speedBarX, speedBarY + speedBarH - speedHeight, speedBarW, speedHeight);
       
       // Speed bar border
-      fpv.strokeStyle = '#4a5568';
+      fpv.strokeStyle = '#495057';
       fpv.lineWidth = 1;
       fpv.strokeRect(speedBarX, speedBarY, speedBarW, speedBarH);
       
       // Speed display
-      fpv.fillStyle = '#e2e8f0';
+      fpv.fillStyle = '#000000';
       fpv.font = 'bold 14px monospace';
       fpv.textAlign = 'left';
       const speedText = `${Math.abs(car.v * 10).toFixed(1)} km/h`;
@@ -540,14 +630,14 @@
       
       // Steering angle display
       const angleDegrees = (steeringAngle * 180 / Math.PI).toFixed(1);
-      fpv.fillStyle = '#e2e8f0';
+      fpv.fillStyle = '#000000';
       fpv.font = 'bold 14px monospace';
       fpv.textAlign = 'center';
       fpv.fillText(`转向: ${angleDegrees}°`, w / 2, 30);
       
       // Speed direction indicator
       if (Math.abs(car.v) > 0.1) {
-        fpv.fillStyle = car.v > 0 ? '#4ade80' : '#f59e0b';
+        fpv.fillStyle = car.v > 0 ? '#28a745' : '#ffc107';
         fpv.font = 'bold 12px monospace';
         fpv.textAlign = 'center';
         fpv.fillText(car.v > 0 ? '前进' : '倒车', w / 2, 50);
@@ -606,18 +696,21 @@
       ctx.rotate(s.angle);
       // Highlight target spot
       const isTarget = i === targetSpotIndex;
-      ctx.fillStyle = isTarget ? 'rgba(80,200,120,0.25)' : 'rgba(80,200,120,0.12)';
-      ctx.strokeStyle = isTarget ? '#4fe3b5' : '#4a8db7';
-      ctx.lineWidth = isTarget ? 4 : 2;
+      ctx.fillStyle = isTarget ? 'rgba(20,40,30,0.8)' : 'rgba(20,40,30,0.4)';
+      ctx.strokeStyle = isTarget ? '#00ff88' : '#2a5a3a';
+      ctx.lineWidth = isTarget ? 6 : 3;
       ctx.beginPath();
       ctx.rect(-s.w/2, -s.h/2, s.w, s.h);
       ctx.fill();
       ctx.stroke();
       // Target indicator
       if (isTarget) {
-        ctx.fillStyle = '#4fe3b5';
-        ctx.font = 'bold 16px sans-serif';
+        ctx.fillStyle = '#00ff88';
+        ctx.font = 'bold 18px sans-serif';
         ctx.textAlign = 'center';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.strokeText('目标', 0, -s.h/2 - 8);
         ctx.fillText('目标', 0, -s.h/2 - 8);
       }
       ctx.restore();
@@ -662,6 +755,40 @@
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
+  
+  // Music controls
+  const musicToggle = document.getElementById('music-toggle');
+  const volumeSlider = document.getElementById('volume-slider');
+  
+  musicToggle.addEventListener('click', () => {
+    enableAudio(); // Ensure audio is enabled
+    if (backgroundMusic) {
+      if (musicPlaying) {
+        backgroundMusic.pause();
+        musicToggle.textContent = '🎵 音乐';
+        musicToggle.classList.remove('playing');
+        musicPlaying = false;
+      } else {
+        backgroundMusic.play().then(() => {
+          musicToggle.textContent = '🔊 播放中';
+          musicToggle.classList.add('playing');
+          musicPlaying = true;
+        }).catch(e => {
+          console.log('Music play failed:', e);
+          musicToggle.textContent = '❌ 播放失败';
+        });
+      }
+    } else {
+      musicToggle.textContent = '❌ 音乐未加载';
+    }
+  });
+  
+  volumeSlider.addEventListener('input', (e) => {
+    if (backgroundMusic) {
+      backgroundMusic.volume = e.target.value / 100;
+    }
+  });
+  
   // Overlay buttons
   ov.next.addEventListener('click', () => resetLevel(level + 1));
   ov.retry.addEventListener('click', () => resetLevel(level));
