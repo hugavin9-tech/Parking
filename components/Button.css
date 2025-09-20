@@ -1,0 +1,328 @@
+/**
+ * 移动端优化的Button样式
+ * 支持PC端和移动端，提供完整的交互状态
+ */
+
+/* CSS变量定义 */
+:root {
+  --btn-h-sm: 36px;
+  --btn-h-md: 44px;
+  --btn-h-lg: 52px;
+  --btn-radius: 8px;
+  --btn-padding-sm: 8px 16px;
+  --btn-padding-md: 12px 20px;
+  --btn-padding-lg: 16px 24px;
+  --btn-font-size-sm: 14px;
+  --btn-font-size-md: 16px;
+  --btn-font-size-lg: 18px;
+  --btn-tap-area: 44px;
+  --btn-transition: all 0.2s ease;
+  --btn-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --btn-shadow-active: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 基础按钮样式 - Neobrutalist风格 */
+.mobile-btn {
+  /* 基础属性 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+  
+  /* 尺寸和间距 */
+  min-height: var(--btn-h-md);
+  min-width: var(--btn-tap-area);
+  padding: var(--btn-padding-md);
+  border-radius: 0; /* Neobrutalist风格使用直角 */
+  
+  /* 字体 */
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: var(--btn-font-size-md);
+  font-weight: 750; /* 更粗的字体 */
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  text-transform: uppercase; /* 大写字母 */
+  letter-spacing: 0.5px;
+  
+  /* Neobrutalist边框和阴影 */
+  border: 3px solid #000000;
+  box-shadow: 3px 3px 0 #000000;
+  background: #4ade80; /* 默认绿色背景 */
+  
+  /* 交互 */
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  
+  /* 过渡效果 */
+  transition: all 0.3s ease;
+  
+  /* 焦点样式 */
+  outline: none;
+}
+
+/* 尺寸变体 */
+.mobile-btn--sm {
+  min-height: var(--btn-h-sm);
+  padding: var(--btn-padding-sm);
+  font-size: var(--btn-font-size-sm);
+}
+
+.mobile-btn--md {
+  min-height: var(--btn-h-md);
+  padding: var(--btn-padding-md);
+  font-size: var(--btn-font-size-md);
+}
+
+.mobile-btn--lg {
+  min-height: var(--btn-h-lg);
+  padding: var(--btn-padding-lg);
+  font-size: var(--btn-font-size-lg);
+}
+
+/* 颜色变体 - Neobrutalist风格 */
+.mobile-btn--primary {
+  background: #4ade80; /* 绿色 */
+  color: #000000;
+  border: 3px solid #000000;
+  box-shadow: 3px 3px 0 #000000;
+}
+
+.mobile-btn--primary:hover {
+  background: #1ac2ff; /* 蓝色 */
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1.5px 1.5px 0 #000000;
+}
+
+.mobile-btn--secondary {
+  background: #ffffff; /* 白色 */
+  color: #000000;
+  border: 3px solid #000000;
+  box-shadow: 3px 3px 0 #000000;
+}
+
+.mobile-btn--secondary:hover {
+  background: #f0f0f0; /* 浅灰色 */
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1.5px 1.5px 0 #000000;
+}
+
+.mobile-btn--danger {
+  background: #ff66a3; /* 粉色 */
+  color: #000000;
+  border: 3px solid #000000;
+  box-shadow: 3px 3px 0 #000000;
+}
+
+.mobile-btn--danger:hover {
+  background: #ff4757; /* 红色 */
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1.5px 1.5px 0 #000000;
+}
+
+.mobile-btn--ghost {
+  background: #f8f9fa; /* 浅色背景 */
+  color: #000000;
+  border: 3px solid #000000;
+  box-shadow: 3px 3px 0 #000000;
+}
+
+.mobile-btn--ghost:hover {
+  background: #e9ecef; /* 更深的浅色 */
+  transform: translate(1.5px, 1.5px);
+  box-shadow: 1.5px 1.5px 0 #000000;
+}
+
+/* 交互状态 - Neobrutalist风格 */
+.mobile-btn--active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 #000000;
+}
+
+.mobile-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: #cccccc;
+  color: #666666;
+}
+
+.mobile-btn--loading {
+  cursor: wait;
+  pointer-events: none;
+  background: #e0e0e0;
+}
+
+.mobile-btn--loading .mobile-btn__text {
+  opacity: 0.7;
+}
+
+/* 加载状态动画 */
+.mobile-btn--loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: mobile-btn-spin 1s linear infinite;
+}
+
+@keyframes mobile-btn-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 焦点样式 */
+.mobile-btn:focus-visible {
+  outline: 2px solid #007AFF;
+  outline-offset: 2px;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  :root {
+    --btn-h-sm: 40px;
+    --btn-h-md: 44px;
+    --btn-h-lg: 48px;
+    --btn-font-size-sm: 14px;
+    --btn-font-size-md: 16px;
+    --btn-font-size-lg: 18px;
+  }
+  
+  .mobile-btn {
+    /* 移动端触摸优化 */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    /* 防止iOS双击缩放 */
+    -webkit-touch-callout: none;
+    /* 防止长按选择文字 */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* 移动端激活状态更明显 - Neobrutalist风格 */
+  .mobile-btn--active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 #000000;
+  }
+  
+  /* 移动端焦点样式 */
+  .mobile-btn:focus-visible {
+    outline: 3px solid #007AFF;
+    outline-offset: 1px;
+  }
+  
+  /* 防止iOS橡皮筋效果 */
+  .mobile-btn {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* 小屏幕优化 */
+@media (max-width: 375px) {
+  :root {
+    --btn-padding-sm: 6px 12px;
+    --btn-padding-md: 8px 16px;
+    --btn-padding-lg: 10px 20px;
+    --btn-font-size-sm: 13px;
+    --btn-font-size-md: 14px;
+    --btn-font-size-lg: 16px;
+  }
+}
+
+/* 按钮组样式 */
+.mobile-btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+.mobile-btn-group.horizontal {
+  flex-direction: row;
+  align-items: center;
+}
+
+.mobile-btn-group.vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.mobile-btn-group.horizontal-scroll {
+  flex-direction: row;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-btn-group.horizontal-scroll .mobile-btn {
+  flex-shrink: 0;
+}
+
+/* 底部固定CTA样式 */
+.mobile-btn--cta {
+  position: fixed;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  left: 16px;
+  right: 16px;
+  width: auto;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 无障碍优化 */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-btn {
+    transition: none;
+  }
+  
+  .mobile-btn--loading::after {
+    animation: none;
+  }
+}
+
+/* 高对比度模式 */
+@media (prefers-contrast: high) {
+  .mobile-btn {
+    border-width: 2px;
+  }
+  
+  .mobile-btn--primary {
+    border-color: #000;
+  }
+  
+  .mobile-btn--secondary {
+    border-color: #000;
+    color: #000;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .mobile-btn--secondary {
+    background: #1C1C1E;
+    color: #0A84FF;
+    border-color: #48484A;
+  }
+  
+  .mobile-btn--secondary:hover {
+    background: #2C2C2E;
+  }
+  
+  .mobile-btn--ghost {
+    color: #0A84FF;
+    border-color: #0A84FF;
+  }
+  
+  .mobile-btn--ghost:hover {
+    background: rgba(10, 132, 255, 0.1);
+  }
+}

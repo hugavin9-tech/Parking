@@ -2,10 +2,16 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#007AFF" />
   <title>停车入库 - 小游戏</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;750;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
   <link rel="stylesheet" href="./mobile.css" />
+  <link rel="stylesheet" href="./components/Button.css" />
 </head>
 <body>
   <!-- 顶部信息栏 -->
@@ -33,10 +39,10 @@
     </div>
     
     <div class="audio-controls">
-      <button id="music-toggle" class="music-btn">🎵 音乐</button>
-      <input type="range" id="volume-slider" min="0" max="100" value="50" class="volume-slider">
-      <button id="sound-toggle" class="music-btn">🔊 音效</button>
-      <button id="test-sound" class="music-btn">🔊 测试</button>
+      <button id="music-toggle" class="music-btn" data-mobile-btn role="button" aria-label="音乐开关">🎵 音乐</button>
+      <input type="range" id="volume-slider" min="0" max="100" value="50" class="volume-slider" aria-label="音量控制">
+      <button id="sound-toggle" class="music-btn" data-mobile-btn role="button" aria-label="音效开关">🔊 音效</button>
+      <button id="test-sound" class="music-btn" data-mobile-btn role="button" aria-label="测试音效">🔊 测试</button>
     </div>
   </div>
 
@@ -46,7 +52,7 @@
     <div class="drawer-content">
       <div class="drawer-header">
         <h3>设置</h3>
-        <button class="drawer-close" id="drawer-close">×</button>
+        <button class="drawer-close" id="drawer-close" data-mobile-btn role="button" aria-label="关闭设置">×</button>
       </div>
       <div class="drawer-body">
         <div class="setting-group">
@@ -54,9 +60,9 @@
           <input type="range" id="mobile-volume-slider" min="0" max="100" value="50" class="volume-slider">
         </div>
         <div class="setting-group">
-          <button id="mobile-music-toggle" class="setting-btn">🎵 音乐</button>
-          <button id="mobile-sound-toggle" class="setting-btn">🔊 音效</button>
-          <button id="mobile-test-sound" class="setting-btn">🔊 测试</button>
+          <button id="mobile-music-toggle" class="setting-btn" data-mobile-btn role="button" aria-label="音乐开关">🎵 音乐</button>
+          <button id="mobile-sound-toggle" class="setting-btn" data-mobile-btn role="button" aria-label="音效开关">🔊 音效</button>
+          <button id="mobile-test-sound" class="setting-btn" data-mobile-btn role="button" aria-label="测试音效">🔊 测试</button>
         </div>
       </div>
     </div>
@@ -131,7 +137,7 @@
         <div class="mobile-level" id="mobile-level">关卡: 1</div>
         <div class="mobile-status" id="mobile-status">准备开始</div>
       </div>
-      <button class="mobile-settings-btn" id="mobile-settings-btn" aria-label="设置">
+      <button class="mobile-settings-btn" id="mobile-settings-btn" data-mobile-btn role="button" aria-label="设置">
         <svg viewBox="0 0 24 24" width="20" height="20">
           <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" fill="currentColor"/>
         </svg>
@@ -173,11 +179,11 @@
         <!-- 踏板控制 -->
         <div class="mobile-pedals">
           <div class="pedal-row">
-            <button class="mobile-pedal gas-pedal" id="mobile-gas-pedal" aria-label="油门">油门</button>
-            <button class="mobile-pedal brake-pedal" id="mobile-brake-pedal" aria-label="刹车">刹车</button>
+            <button class="mobile-pedal gas-pedal" id="mobile-gas-pedal" data-mobile-btn role="button" aria-label="油门">油门</button>
+            <button class="mobile-pedal brake-pedal" id="mobile-brake-pedal" data-mobile-btn role="button" aria-label="刹车">刹车</button>
           </div>
           <div class="pedal-row">
-            <button class="mobile-pedal reverse-pedal" id="mobile-reverse-pedal" aria-label="倒车">倒车</button>
+            <button class="mobile-pedal reverse-pedal" id="mobile-reverse-pedal" data-mobile-btn role="button" aria-label="倒车">倒车</button>
           </div>
         </div>
       </div>
@@ -192,12 +198,19 @@
       <div class="row"><span class="label">分数</span><span class="value" id="ov-score">0</span></div>
       <div class="row"><span class="label">评级</span><span class="value" id="ov-grade">-</span></div>
       <div class="actions">
-        <button class="btn" id="btn-retry">重试 (R)</button>
-        <button class="btn primary" id="btn-next">继续 (Enter/N)</button>
+        <button class="btn" id="btn-retry" data-mobile-btn role="button" aria-label="重试">重试 (R)</button>
+        <button class="btn primary" id="btn-next" data-mobile-btn role="button" aria-label="继续">继续 (Enter/N)</button>
       </div>
     </div>
   </div>
+  <script src="./components/Button.js"></script>
   <script src="./game.js"></script>
+  <script>
+    // 初始化移动端按钮
+    document.addEventListener('DOMContentLoaded', () => {
+      initMobileButtons();
+    });
+  </script>
 </body>
 </html>
 

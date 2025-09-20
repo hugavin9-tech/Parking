@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>移动端优化测试</title>
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./mobile.css" />
+  <style>
+    .test-panel {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.9);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: monospace;
+      z-index: 10000;
+      font-size: 12px;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+    
+    .test-item {
+      margin: 5px 0;
+      padding: 2px 0;
+    }
+    
+    .status-ok { color: #00ff00; }
+    .status-error { color: #ff0000; }
+    .status-warning { color: #ffff00; }
+    
+    .test-button {
+      background: #007AFF;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      margin: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .test-button:hover {
+      background: #0056CC;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-panel">
+    <h3>移动端优化测试</h3>
+    <div class="test-item">视口设置: <span id="viewport-status" class="status-ok">✅</span></div>
+    <div class="test-item">画布尺寸: <span id="canvas-size" class="status-warning">检测中...</span></div>
+    <div class="test-item">渲染器: <span id="renderer-status" class="status-warning">检测中...</span></div>
+    <div class="test-item">触控支持: <span id="touch-status" class="status-warning">检测中...</span></div>
+    <div class="test-item">WebGL支持: <span id="webgl-status" class="status-warning">检测中...</span></div>
+    <div class="test-item">DPR: <span id="dpr-status" class="status-warning">检测中...</span></div>
+    <div class="test-item">方向: <span id="orientation-status" class="status-warning">检测中...</span></div>
+    
+    <div style="margin-top: 10px;">
+      <button class="test-button" onclick="runTests()">重新测试</button>
+      <button class="test-button" onclick="togglePanel()">隐藏面板</button>
+    </div>
+  </div>
+
+  <!-- 桌面端游戏容器 -->
+  <div class="game-container">
+    <canvas id="game" width="1280" height="720"></canvas>
+  </div>
+
+  <!-- 移动端布局容器 -->
+  <div class="mobile-layout">
+    <header class="mobile-header">
+      <div class="mobile-game-info">
+        <div class="mobile-title">停车入库</div>
+        <div class="mobile-level">关卡: 1</div>
+        <div class="mobile-status">准备开始</div>
+      </div>
+    </header>
+
+    <div class="game-stage">
+      <canvas id="game-mobile" width="1280" height="720"></canvas>
+    </div>
+
+    <div class="mobile-bottom-bar">
+      <div style="color: white; text-align: center; padding: 20px;">
+        移动端控制区
+      </div>
+    </div>
+  </div>
+
+  <script src="./game.js"></script>
+  <script>
+    let panelVisible = true;
+    
+    function updateTestStatus() {
+      // 视口设置检查
+      const viewport = document.querySelector('meta[name="viewport"]');
+      const viewportOk = viewport && viewport.content.includes('viewport-fit=cover');
+      document.getElementById('viewport-status').textContent = viewportOk ? '✅' : '❌';
+      document.getElementById('viewport-status').className = viewportOk ? 'status-ok' : 'status-error';
+      
+      // 画布尺寸检查
+      const canvas = document.getElementById('game') || document.getElementById('game-mobile');
+      if (canvas) {
+        const size = `${canvas.width}x${canvas.height}`;
+        const styleSize = `${canvas.style.width}x${canvas.style.height}`;
+        document.getElementById('canvas-size').textContent = `${size} (${styleSize})`;
+        document.getElementById('canvas-size').className = 'status-ok';
+      } else {
+        document.getElementById('canvas-size').textContent = '❌ 未找到';
+        document.getElementById('canvas-size').className = 'status-error';
+      }
+      
+      // 渲染器检查
+      const renderer = window.gameRenderer || 'unknown';
+      document.getElementById('renderer-status').textContent = renderer;
+      document.getElementById('renderer-status').className = 'status-ok';
+      
+      // 触控支持检查
+      const touchSupport = 'ontouchstart' in window;
+      document.getElementById('touch-status').textContent = touchSupport ? '✅ 支持' : '❌ 不支持';
+      document.getElementById('touch-status').className = touchSupport ? 'status-ok' : 'status-warning';
+      
+      // WebGL支持检查
+      const webglSupport = !!document.createElement('canvas').getContext('webgl');
+      const webgl2Support = !!document.createElement('canvas').getContext('webgl2');
+      const webglText = webgl2Support ? 'WebGL2' : webglSupport ? 'WebGL1' : '2D Canvas';
+      document.getElementById('webgl-status').textContent = webglText;
+      document.getElementById('webgl-status').className = webglSupport ? 'status-ok' : 'status-warning';
+      
+      // DPR检查
+      const dpr = window.devicePixelRatio || 1;
+      const safeDpr = Math.min(dpr, 2);
+      document.getElementById('dpr-status').textContent = `${dpr} (限制: ${safeDpr})`;
+      document.getElementById('dpr-status').className = dpr <= 2 ? 'status-ok' : 'status-warning';
+      
+      // 方向检查
+      const orientation = screen.orientation?.type || 'unknown';
+      document.getElementById('orientation-status').textContent = orientation;
+      document.getElementById('orientation-status').className = 'status-ok';
+    }
+    
+    function runTests() {
+      updateTestStatus();
+      console.log('移动端测试完成');
+    }
+    
+    function togglePanel() {
+      const panel = document.querySelector('.test-panel');
+      panelVisible = !panelVisible;
+      panel.style.display = panelVisible ? 'block' : 'none';
+    }
+    
+    // 监听方向变化
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        updateTestStatus();
+        console.log('方向变化后重新测试');
+      }, 500);
+    });
+    
+    // 监听窗口大小变化
+    window.addEventListener('resize', () => {
+      setTimeout(updateTestStatus, 100);
+    });
+    
+    // 初始测试
+    setTimeout(runTests, 1000);
+    
+    // 定期更新
+    setInterval(updateTestStatus, 5000);
+  </script>
+</body>
+</html>

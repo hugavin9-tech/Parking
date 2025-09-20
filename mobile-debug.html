@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>移动端调试</title>
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./mobile.css" />
+  <style>
+    .debug-panel {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.9);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: monospace;
+      z-index: 10000;
+      font-size: 12px;
+      max-width: 300px;
+    }
+    .debug-panel h3 {
+      margin: 0 0 10px 0;
+      color: #00ff00;
+    }
+    .debug-item {
+      margin: 5px 0;
+      padding: 2px 0;
+    }
+    .status-ok { color: #00ff00; }
+    .status-error { color: #ff0000; }
+    .status-warning { color: #ffff00; }
+  </style>
+</head>
+<body>
+  <div class="debug-panel">
+    <h3>移动端调试信息</h3>
+    <div class="debug-item">屏幕宽度: <span id="screen-width" class="status-ok"></span>px</div>
+    <div class="debug-item">屏幕高度: <span id="screen-height" class="status-ok"></span>px</div>
+    <div class="debug-item">移动端布局: <span id="mobile-layout-status" class="status-warning"></span></div>
+    <div class="debug-item">桌面端布局: <span id="desktop-layout-status" class="status-warning"></span></div>
+    <div class="debug-item">移动端画布: <span id="mobile-canvas-status" class="status-warning"></span></div>
+    <div class="debug-item">桌面端画布: <span id="desktop-canvas-status" class="status-warning"></span></div>
+    <div class="debug-item">当前断点: <span id="breakpoint-status" class="status-ok"></span></div>
+  </div>
+
+  <!-- 桌面端游戏容器 -->
+  <div class="game-container">
+    <canvas id="game" width="1280" height="720" style="background: #1a1d24;"></canvas>
+    <div style="position: absolute; top: 10px; right: 10px; color: white; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px;">
+      桌面端画布
+    </div>
+  </div>
+
+  <!-- 移动端布局容器 -->
+  <div class="mobile-layout">
+    <!-- 移动端Header -->
+    <header class="mobile-header">
+      <div class="mobile-game-info">
+        <div class="mobile-title">停车入库</div>
+        <div class="mobile-level">关卡: 1</div>
+        <div class="mobile-status">准备开始</div>
+      </div>
+    </header>
+
+    <!-- 游戏画布区域 -->
+    <div class="game-stage">
+      <canvas id="game-mobile" width="1280" height="720" style="background: #1a1d24;"></canvas>
+      <div style="position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px;">
+        移动端画布
+      </div>
+    </div>
+
+    <!-- 移动端底部操作区 -->
+    <div class="mobile-bottom-bar">
+      <div style="color: white; text-align: center; padding: 20px;">
+        移动端控制区
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateDebugInfo() {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      const mobileLayout = document.querySelector('.mobile-layout');
+      const desktopLayout = document.querySelector('.game-container');
+      const mobileCanvas = document.getElementById('game-mobile');
+      const desktopCanvas = document.getElementById('game');
+      
+      // 更新基本信息
+      document.getElementById('screen-width').textContent = screenWidth;
+      document.getElementById('screen-height').textContent = screenHeight;
+      
+      // 更新布局状态
+      const mobileDisplay = window.getComputedStyle(mobileLayout).display;
+      const desktopDisplay = window.getComputedStyle(desktopLayout).display;
+      
+      document.getElementById('mobile-layout-status').textContent = mobileDisplay;
+      document.getElementById('desktop-layout-status').textContent = desktopDisplay;
+      
+      // 更新画布状态
+      document.getElementById('mobile-canvas-status').textContent = 
+        mobileCanvas ? 'Found' : 'Not Found';
+      document.getElementById('desktop-canvas-status').textContent = 
+        desktopCanvas ? 'Found' : 'Not Found';
+      
+      // 更新断点状态
+      let breakpoint = 'Unknown';
+      if (screenWidth <= 768) {
+        breakpoint = 'Mobile (≤768px)';
+      } else if (screenWidth >= 769) {
+        breakpoint = 'Desktop (≥769px)';
+      }
+      document.getElementById('breakpoint-status').textContent = breakpoint;
+      
+      // 更新状态颜色
+      const mobileStatus = document.getElementById('mobile-layout-status');
+      const desktopStatus = document.getElementById('desktop-layout-status');
+      
+      if (screenWidth <= 768) {
+        mobileStatus.className = mobileDisplay === 'flex' ? 'status-ok' : 'status-error';
+        desktopStatus.className = desktopDisplay === 'none' ? 'status-ok' : 'status-warning';
+      } else {
+        mobileStatus.className = mobileDisplay === 'none' ? 'status-ok' : 'status-warning';
+        desktopStatus.className = desktopDisplay === 'flex' ? 'status-ok' : 'status-error';
+      }
+    }
+    
+    // 初始化
+    updateDebugInfo();
+    window.addEventListener('resize', updateDebugInfo);
+    
+    // 每秒更新一次
+    setInterval(updateDebugInfo, 1000);
+  </script>
+</body>
+</html>

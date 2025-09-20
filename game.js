@@ -2,13 +2,231 @@
   'use strict';
 
   /** @type {HTMLCanvasElement} */
-  const canvas = document.getElementById('game') || document.getElementById('game-mobile');
+  // 根据屏幕宽度选择画布
+  let canvas;
+  if (window.innerWidth <= 768) {
+    // 移动端：优先选择移动端画布
+    canvas = document.getElementById('game-mobile') || document.getElementById('game');
+  } else {
+    // 桌面端：优先选择桌面端画布
+    canvas = document.getElementById('game') || document.getElementById('game-mobile');
+  }
+  
   console.log('Canvas found:', canvas);
   console.log('Canvas ID:', canvas ? canvas.id : 'null');
-  const ctx = canvas.getContext('2d');
+  console.log('Canvas dimensions:', canvas ? canvas.width + 'x' + canvas.height : 'null');
+  console.log('Mobile layout visible:', document.querySelector('.mobile-layout')?.style.display !== 'none');
+  console.log('Desktop layout visible:', document.querySelector('.game-container')?.style.display !== 'none');
+  
+  // 限制DPR，避免移动端WebGL因内存/纹理过大失败
+  const getSafeDPR = () => Math.min(window.devicePixelRatio || 1, 2);
+  
+  // 渲染器初始化 - 优先使用2D Canvas，因为游戏逻辑基于2D
+  let ctx = null;
+  let renderer = '2d';
+  
+  try {
+    // 直接使用2D Canvas，因为游戏逻辑基于2D绘制
+    console.log('Using 2D Canvas for game rendering');
+    ctx = canvas.getContext('2d');
+    renderer = '2d';
+    
+    if (!ctx) {
+      console.error('Failed to get 2D context');
+    }
+  } catch (e) {
+    console.warn('2D context creation failed:', e);
+    ctx = null;
+  }
+  
+  if (!ctx) {
+    console.error('Failed to get any rendering context - check container visibility/size');
+    
+    // 尝试恢复
+    setTimeout(() => {
+      console.log('Retrying context creation...');
+      const retryCtx = canvas.getContext('2d');
+      if (retryCtx) {
+        console.log('Context recovery successful');
+        ctx = retryCtx;
+        renderer = '2d';
+      } else {
+        console.error('Context recovery failed');
+      }
+    }, 1000);
+    
+    return;
+  }
+  
+  // 2D Canvas不需要WebGL上下文监听
   // FPV canvas is now a div, so we don't need to get context
   const fpvCanvas = document.getElementById('fpv');
   const fpv = null; // No longer using canvas for FPV
+  
+  // 画布尺寸计算和初始化
+  const resizeCanvas = () => {
+    // 优先使用可视视口高度，规避iOS 100vh/地址栏问题
+    const vw = window.innerWidth;
+    const vh = window.visualViewport?.height ?? window.innerHeight;
+    
+    const dpr = getSafeDPR();
+    canvas.style.width = vw + 'px';
+    canvas.style.height = vh + 'px';
+    canvas.width = Math.floor(vw * dpr);
+    canvas.height = Math.floor(vh * dpr);
+    
+    // 设置上下文缩放
+    if (ctx && renderer === '2d') {
+      ctx.scale(dpr, dpr);
+    } else if (ctx && (renderer === 'webgl1' || renderer === 'webgl2')) {
+      // WebGL上下文不需要手动缩放，DPR已经应用到画布尺寸
+      console.log('WebGL context ready');
+    }
+    
+    console.log('Canvas resized:', {
+      vw, vh, dpr,
+      canvasWidth: canvas.width,
+      canvasHeight: canvas.height,
+      styleWidth: canvas.style.width,
+      styleHeight: canvas.style.height
+    });
+  };
+  
+  // 确保容器可见后再初始化
+  const initGame = () => {
+    // 检查容器是否可见
+    const container = canvas.parentElement;
+    const isVisible = container && container.offsetWidth > 0 && container.offsetHeight > 0;
+    
+    if (!isVisible) {
+      console.warn('Game container not visible, retrying in 100ms');
+      setTimeout(initGame, 100);
+      return;
+    }
+    
+    console.log('Game container visible, initializing...');
+    
+    // 移动端调试信息
+    const logMobileDebugInfo = () => {
+      const debugInfo = {
+        ua: navigator.userAgent,
+        innerWidth: window.innerWidth,
+        innerHeight: window.innerHeight,
+        visualViewportH: window.visualViewport?.height,
+        dpr: window.devicePixelRatio,
+        screenWidth: screen.width,
+        screenHeight: screen.height,
+        orientation: screen.orientation?.type || 'unknown',
+        touchSupport: 'ontouchstart' in window,
+        webglSupport: !!document.createElement('canvas').getContext('webgl'),
+        webgl2Support: !!document.createElement('canvas').getContext('webgl2'),
+        canvasFound: !!canvas,
+        canvasVisible: canvas ? canvas.offsetWidth > 0 && canvas.offsetHeight > 0 : false,
+        renderer: renderer,
+        mobileLayoutVisible: document.querySelector('.mobile-layout')?.offsetWidth > 0,
+        desktopLayoutVisible: document.querySelector('.game-container')?.offsetWidth > 0
+      };
+      
+      console.table(debugInfo);
+      
+      // 输出关键信息
+      console.log('Mobile Debug Info:');
+      console.log('- Screen:', debugInfo.screenWidth + 'x' + debugInfo.screenHeight);
+      console.log('- Viewport:', debugInfo.innerWidth + 'x' + debugInfo.innerHeight);
+      console.log('- Visual Viewport:', debugInfo.visualViewportH);
+      console.log('- DPR:', debugInfo.dpr);
+      console.log('- Touch Support:', debugInfo.touchSupport);
+      console.log('- WebGL Support:', debugInfo.webglSupport);
+      console.log('- WebGL2 Support:', debugInfo.webgl2Support);
+      console.log('- Renderer:', debugInfo.renderer);
+      console.log('- Canvas Visible:', debugInfo.canvasVisible);
+      console.log('- Mobile Layout Visible:', debugInfo.mobileLayoutVisible);
+      console.log('- Desktop Layout Visible:', debugInfo.desktopLayoutVisible);
+    };
+    
+    // 输出调试信息
+    logMobileDebugInfo();
+    
+    // 开始游戏循环
+    startGameLoop();
+  };
+  
+  // 游戏循环函数
+  const startGameLoop = () => {
+    let lastTime = 0;
+    
+    const gameLoop = (currentTime) => {
+      const dt = (currentTime - lastTime) / 1000;
+      lastTime = currentTime;
+      
+      // 更新游戏逻辑
+      update(dt);
+      
+      // 绘制游戏画面
+      draw();
+      
+      // 继续循环
+      requestAnimationFrame(gameLoop);
+    };
+    
+    requestAnimationFrame(gameLoop);
+  };
+  
+  // 监听窗口大小变化和方向变化
+  window.addEventListener('resize', () => {
+    // 重新选择画布（如果屏幕宽度变化导致布局切换）
+    const newCanvas = window.innerWidth <= 768 
+      ? (document.getElementById('game-mobile') || document.getElementById('game'))
+      : (document.getElementById('game') || document.getElementById('game-mobile'));
+    
+    if (newCanvas && newCanvas !== canvas) {
+      console.log('Layout changed, switching canvas from', canvas?.id, 'to', newCanvas.id);
+      canvas = newCanvas;
+      // 重新获取上下文
+      ctx = canvas.getContext('2d');
+      renderer = '2d';
+    }
+    
+    resizeCanvas();
+  });
+  
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      // 重新选择画布
+      const newCanvas = window.innerWidth <= 768 
+        ? (document.getElementById('game-mobile') || document.getElementById('game'))
+        : (document.getElementById('game') || document.getElementById('game-mobile'));
+      
+      if (newCanvas && newCanvas !== canvas) {
+        console.log('Orientation changed, switching canvas from', canvas?.id, 'to', newCanvas.id);
+        canvas = newCanvas;
+        ctx = canvas.getContext('2d');
+        renderer = '2d';
+      }
+      
+      resizeCanvas();
+    }, 200);
+  });
+  
+  // 监听可见性变化，避免iOS后台导致上下文丢失
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      console.log('Game paused - document hidden');
+    } else {
+      console.log('Game resumed - document visible');
+      resizeCanvas(); // 重新计算尺寸
+    }
+  });
+  
+  // 等待DOM完全加载后再初始化
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(initGame, 100);
+    });
+  } else {
+    // DOM已经加载完成，直接初始化
+    setTimeout(initGame, 100);
+  }
 
   const uiLevel = document.getElementById('level');
   const uiStatus = document.getElementById('status');
@@ -237,6 +455,15 @@
     if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
     keys.add(e.key.toLowerCase());
     enableAudio(); // Enable audio on first key press
+    
+    // 无障碍支持：处理按钮的键盘导航
+    if (e.key === 'Enter' || e.key === ' ') {
+      const activeElement = document.activeElement;
+      if (activeElement && activeElement.hasAttribute('data-mobile-btn')) {
+        e.preventDefault();
+        activeElement.click();
+      }
+    }
   });
   window.addEventListener('keyup', (e) => {
     keys.delete(e.key.toLowerCase());
@@ -244,7 +471,8 @@
   
   // Enable audio on any user interaction
   document.addEventListener('click', enableAudio);
-  document.addEventListener('touchstart', enableAudio);
+  document.addEventListener('touchstart', enableAudio, { passive: true });
+  document.addEventListener('pointerdown', enableAudio, { passive: true });
 
   function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -989,14 +1217,38 @@
 
   // 方向盘触摸控制
   if (steeringWheel) {
+    // 使用Pointer Events统一处理鼠标和触摸
+    steeringWheel.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      mobileSteeringActive = true;
+      mobileSteeringStartX = e.clientX;
+      mobileSteeringCurrentX = e.clientX;
+    }, { passive: false });
+    
+    // 保持touchstart作为降级支持
     steeringWheel.addEventListener('touchstart', (e) => {
       e.preventDefault();
       mobileSteeringActive = true;
       const touch = e.touches[0];
       mobileSteeringStartX = touch.clientX;
       mobileSteeringCurrentX = touch.clientX;
-    });
+    }, { passive: false });
 
+    // 使用Pointer Events
+    steeringWheel.addEventListener('pointermove', (e) => {
+      e.preventDefault();
+      if (mobileSteeringActive) {
+        mobileSteeringCurrentX = e.clientX;
+        const deltaX = mobileSteeringCurrentX - mobileSteeringStartX;
+        const maxDelta = 50; // 最大转向范围
+        const steeringRatio = Math.max(-1, Math.min(1, deltaX / maxDelta));
+        
+        // 更新方向盘角度
+        steeringTarget = steeringRatio * maxSteer;
+      }
+    }, { passive: false });
+    
+    // 保持touchmove作为降级支持
     steeringWheel.addEventListener('touchmove', (e) => {
       e.preventDefault();
       if (mobileSteeringActive) {
@@ -1009,13 +1261,27 @@
         // 更新方向盘角度
         steeringTarget = steeringRatio * maxSteer;
       }
-    });
+    }, { passive: false });
 
+    // 使用Pointer Events
+    steeringWheel.addEventListener('pointerup', (e) => {
+      e.preventDefault();
+      mobileSteeringActive = false;
+      steeringTarget = 0; // 松开时回正
+    }, { passive: false });
+    
+    steeringWheel.addEventListener('pointercancel', (e) => {
+      e.preventDefault();
+      mobileSteeringActive = false;
+      steeringTarget = 0; // 取消时回正
+    }, { passive: false });
+    
+    // 保持touchend作为降级支持
     steeringWheel.addEventListener('touchend', (e) => {
       e.preventDefault();
       mobileSteeringActive = false;
       steeringTarget = 0; // 松开时回正
-    });
+    }, { passive: false });
   }
 
   // 油门踏板
@@ -1024,12 +1290,12 @@
       e.preventDefault();
       keys.ArrowUp = true;
       keys.w = true;
-    });
+    }, { passive: false });
     gasPedal.addEventListener('touchend', (e) => {
       e.preventDefault();
       keys.ArrowUp = false;
       keys.w = false;
-    });
+    }, { passive: false });
   }
 
   // 刹车踏板
@@ -1037,11 +1303,11 @@
     brakePedal.addEventListener('touchstart', (e) => {
       e.preventDefault();
       keys[' '] = true;
-    });
+    }, { passive: false });
     brakePedal.addEventListener('touchend', (e) => {
       e.preventDefault();
       keys[' '] = false;
-    });
+    }, { passive: false });
   }
 
   // 倒车踏板
@@ -1050,12 +1316,12 @@
       e.preventDefault();
       keys.ArrowDown = true;
       keys.s = true;
-    });
+    }, { passive: false });
     reversePedal.addEventListener('touchend', (e) => {
       e.preventDefault();
       keys.ArrowDown = false;
       keys.s = false;
-    });
+    }, { passive: false });
   }
   
   // 移动端交互逻辑
@@ -1158,26 +1424,26 @@
         keys.ArrowUp = true;
         keys.w = true;
         keys.W = true;
-      });
+      }, { passive: false });
       
       mobileGasPedal.addEventListener('touchend', (e) => {
         e.preventDefault();
         keys.ArrowUp = false;
         keys.w = false;
         keys.W = false;
-      });
+      }, { passive: false });
     }
     
     if (mobileBrakePedal) {
       mobileBrakePedal.addEventListener('touchstart', (e) => {
         e.preventDefault();
         keys[' '] = true;
-      });
+      }, { passive: false });
       
       mobileBrakePedal.addEventListener('touchend', (e) => {
         e.preventDefault();
         keys[' '] = false;
-      });
+      }, { passive: false });
     }
     
     if (mobileReversePedal) {
@@ -1186,14 +1452,14 @@
         keys.ArrowDown = true;
         keys.s = true;
         keys.S = true;
-      });
+      }, { passive: false });
       
       mobileReversePedal.addEventListener('touchend', (e) => {
         e.preventDefault();
         keys.ArrowDown = false;
         keys.s = false;
         keys.S = false;
-      });
+      }, { passive: false });
     }
   }
   

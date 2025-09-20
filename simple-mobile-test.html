@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>简单移动端测试</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #0e0f12; 
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .mobile-layout {
+      display: flex !important;
+      height: 100vh;
+      flex-direction: column;
+      background: #0e0f12;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      width: 100vw;
+    }
+    
+    .mobile-header {
+      height: 48px;
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 2px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 1000;
+      position: relative;
+    }
+    
+    .game-stage {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      background: #0e0f12;
+      min-height: 0;
+    }
+    
+    .game-stage canvas {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      background: #1a1d24;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      display: block;
+    }
+    
+    .mobile-bottom-bar {
+      height: 160px;
+      background: rgba(0, 0, 0, 0.8);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 1000;
+    }
+    
+    .debug-info {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      z-index: 9999;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="debug-info" id="debug-info">
+    屏幕: <span id="screen-size"></span><br>
+    布局: <span id="layout-status"></span><br>
+    画布: <span id="canvas-status"></span>
+  </div>
+
+  <div class="mobile-layout">
+    <header class="mobile-header">
+      <div>停车入库</div>
+      <div>关卡: 1</div>
+    </header>
+
+    <div class="game-stage">
+      <canvas id="game-mobile" width="1280" height="720"></canvas>
+    </div>
+
+    <div class="mobile-bottom-bar">
+      <div style="text-align: center; color: white;">
+        移动端控制区
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateDebugInfo() {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      const mobileLayout = document.querySelector('.mobile-layout');
+      const canvas = document.getElementById('game-mobile');
+      
+      document.getElementById('screen-size').textContent = screenWidth + 'x' + screenHeight;
+      document.getElementById('layout-status').textContent = 
+        window.getComputedStyle(mobileLayout).display;
+      document.getElementById('canvas-status').textContent = 
+        canvas ? 'Found' : 'Not Found';
+    }
+    
+    // 测试画布
+    const canvas = document.getElementById('game-mobile');
+    const ctx = canvas.getContext('2d');
+    
+    // 绘制测试内容
+    ctx.fillStyle = '#1a1d24';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '24px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('移动端测试', canvas.width/2, canvas.height/2);
+    ctx.fillText('如果看到这个文字，说明画布正常', canvas.width/2, canvas.height/2 + 40);
+    
+    updateDebugInfo();
+    window.addEventListener('resize', updateDebugInfo);
+  </script>
+</body>
+</html>

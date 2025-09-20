@@ -1,0 +1,243 @@
+/* 移动端按钮组件样式 - 触控优化 */
+
+/* 基础按钮样式 */
+.mobile-btn {
+  /* 触控命中区 */
+  min-width: 44px;
+  min-height: 44px;
+  
+  /* 去除移动端点击延迟 */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  
+  /* 基础样式 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  
+  /* 过渡动画 */
+  transition: all 0.2s ease;
+  
+  /* 焦点环 */
+  outline: none;
+  position: relative;
+}
+
+/* 焦点状态 */
+.mobile-btn:focus-visible {
+  outline: 2px solid #007AFF;
+  outline-offset: 2px;
+}
+
+/* 激活状态 */
+.mobile-btn:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}
+
+/* 禁用状态 */
+.mobile-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 加载状态 */
+.mobile-btn.loading {
+  cursor: wait;
+  pointer-events: none;
+}
+
+.mobile-btn.loading .btn-text {
+  opacity: 0;
+}
+
+.mobile-btn.loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 按钮尺寸变体 */
+.mobile-btn.small {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.mobile-btn.large {
+  min-width: 52px;
+  min-height: 52px;
+  padding: 12px 24px;
+  font-size: 18px;
+}
+
+/* 按钮类型变体 */
+.mobile-btn.primary {
+  background: #007AFF;
+  color: white;
+}
+
+.mobile-btn.primary:hover {
+  background: #0056CC;
+}
+
+.mobile-btn.secondary {
+  background: #F2F2F7;
+  color: #000;
+  border: 1px solid #C7C7CC;
+}
+
+.mobile-btn.secondary:hover {
+  background: #E5E5EA;
+}
+
+.mobile-btn.danger {
+  background: #FF3B30;
+  color: white;
+}
+
+.mobile-btn.danger:hover {
+  background: #D70015;
+}
+
+.mobile-btn.ghost {
+  background: transparent;
+  color: #007AFF;
+  border: 1px solid #007AFF;
+}
+
+.mobile-btn.ghost:hover {
+  background: rgba(0, 122, 255, 0.1);
+}
+
+/* 按钮组布局 */
+.mobile-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.mobile-btn-group.horizontal {
+  flex-direction: row;
+}
+
+.mobile-btn-group.vertical {
+  flex-direction: column;
+}
+
+.mobile-btn-group.horizontal-scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mobile-btn-group.horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* 响应式文本缩放 */
+.mobile-btn {
+  font-size: clamp(14px, 4vw, 18px);
+}
+
+/* 支持弱动效设置 */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-btn {
+    transition: none;
+  }
+  
+  .mobile-btn:active {
+    transform: none;
+  }
+  
+  .mobile-btn.loading::after {
+    animation: none;
+  }
+}
+
+/* 无障碍支持 */
+.mobile-btn[aria-pressed="true"] {
+  background: #0056CC;
+  color: white;
+}
+
+.mobile-btn[aria-pressed="true"]:hover {
+  background: #004499;
+}
+
+/* 触控反馈优化 */
+.mobile-btn {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* 防止双击缩放 */
+.mobile-btn {
+  touch-action: manipulation;
+}
+
+/* 高对比度支持 */
+@media (prefers-contrast: high) {
+  .mobile-btn {
+    border: 2px solid;
+  }
+  
+  .mobile-btn.primary {
+    border-color: #000;
+  }
+  
+  .mobile-btn.secondary {
+    border-color: #000;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .mobile-btn.secondary {
+    background: #1C1C1E;
+    color: #FFFFFF;
+    border-color: #38383A;
+  }
+  
+  .mobile-btn.secondary:hover {
+    background: #2C2C2E;
+  }
+  
+  .mobile-btn.ghost {
+    color: #0A84FF;
+    border-color: #0A84FF;
+  }
+  
+  .mobile-btn.ghost:hover {
+    background: rgba(10, 132, 255, 0.1);
+  }
+}

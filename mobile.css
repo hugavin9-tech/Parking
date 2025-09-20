@@ -16,9 +16,9 @@
   --mobile-steering-size: clamp(160px, 36vw, 220px);
 }
 
-/* 移动端布局容器 */
+/* 移动端布局容器 - 默认隐藏，只在移动端显示 */
 .mobile-layout {
-  display: flex !important;
+  display: none !important;
   height: 100vh;
   flex-direction: column;
   background: #0e0f12;
@@ -26,6 +26,28 @@
   overflow: hidden;
   z-index: 1;
   width: 100vw;
+  min-height: 100vh;
+}
+
+/* 移动端断点 - 显示移动端布局，隐藏桌面端元素 */
+@media (max-width: 768px) {
+  .mobile-layout {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .game-container {
+    display: none !important;
+  }
+  
+  .top-hud {
+    display: none !important;
+  }
+  
+  .desktop-only {
+    display: none !important;
+  }
 }
 
 /* 移动端Header */
@@ -94,6 +116,7 @@
   position: relative;
   overflow: hidden;
   background: #0e0f12;
+  min-height: 0;
 }
 
 .game-stage canvas {
@@ -412,7 +435,13 @@
 }
 
 /* 响应式断点 */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
+  .mobile-layout {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
   .top-hud {
     display: none !important;
   }
@@ -445,7 +474,7 @@
 }
 
 /* 横屏适配 */
-@media (max-width: 1024px) and (orientation: landscape) {
+@media (max-width: 768px) and (orientation: landscape) {
   .mobile-layout {
     flex-direction: row;
   }

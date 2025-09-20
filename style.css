@@ -1,5 +1,16 @@
-* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; background: #0e0f12; color: #e9eef5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif; }
+* { 
+  box-sizing: border-box; 
+  -webkit-tap-highlight-color: transparent;
+}
+html, body { 
+  height: 100%; 
+  margin: 0; 
+  padding: 0;
+  background: #0e0f12; 
+  color: #e9eef5; 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif; 
+  overscroll-behavior: none;
+}
 /* 顶部HUD布局 */
 .top-hud {
   position: fixed;
@@ -140,7 +151,8 @@ html, body { height: 100%; margin: 0; background: #0e0f12; color: #e9eef5; font-
 
 .game-container { 
   width: 100vw; 
-  height: 100vh; 
+  height: 100dvh; 
+  min-height: 100vh;
   display: flex; 
   align-items: center; 
   justify-content: center; 
@@ -149,18 +161,22 @@ html, body { height: 100%; margin: 0; background: #0e0f12; color: #e9eef5; font-
   overflow: hidden;
   padding: 100px 20px 20px 20px; /* 为顶部HUD留出空间 */
   box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-#game { 
+#game, #game-mobile { 
+  display: block;
+  width: 100vw;
+  height: 100dvh;
   max-width: 100vw; 
   max-height: 100vh; 
-  width: auto; 
-  height: auto; 
   object-fit: contain; 
-  background: transparent; 
+  background: #1a1d24; 
   border: none; 
   border-radius: 12px; 
-  box-shadow: none; 
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  touch-action: none;
 }
 
 /* 现代方向盘样式 */
@@ -501,7 +517,7 @@ html, body { height: 100%; margin: 0; background: #0e0f12; color: #e9eef5; font-
 .status-value.braking { color: #dc3545; }
 
 /* 桌面端保护 - 确保移动端样式不影响桌面端 */
-@media (min-width: 1025px) {
+@media (min-width: 769px) {
   .mobile-layout {
     display: none !important;
   }
@@ -520,7 +536,7 @@ html, body { height: 100%; margin: 0; background: #0e0f12; color: #e9eef5; font-
 }
 
 /* 响应式布局优化 */
-@media (max-width: 1400px) and (min-width: 1025px) {
+@media (max-width: 1400px) and (min-width: 769px) {
   .steering-wrap { --size: 200px; }
   .top-hud { height: 70px; }
   .game-container { padding: 90px 20px 20px 20px; }
@@ -813,5 +829,100 @@ html, body { height: 100%; margin: 0; background: #0e0f12; color: #e9eef5; font-
 }
 .btn.primary { border-color: #47d7a2; background: linear-gradient(180deg,#2f3e34,#203127); }
 .btn:hover { filter: brightness(1.1); }
+
+/* 移动端按钮优化样式 - Neobrutalist风格 */
+@media (max-width: 768px) {
+  /* 音乐控制按钮移动端优化 */
+  .music-btn {
+    min-height: 44px;
+    min-width: 44px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    /* Neobrutalist风格增强 */
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  /* 移动端踏板按钮优化 */
+  .mobile-pedal {
+    min-height: 44px;
+    min-width: 44px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    /* Neobrutalist风格增强 */
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 3px solid #000000;
+    box-shadow: 3px 3px 0 #000000;
+  }
+  
+  /* 游戏按钮移动端优化 */
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    /* Neobrutalist风格增强 */
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 3px solid #000000;
+    box-shadow: 3px 3px 0 #000000;
+  }
+  
+  /* 设置按钮移动端优化 */
+  .setting-btn {
+    min-height: 44px;
+    min-width: 44px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    /* Neobrutalist风格增强 */
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 3px solid #000000;
+    box-shadow: 3px 3px 0 #000000;
+  }
+  
+  /* 移动端激活状态优化 - Neobrutalist风格 */
+  .music-btn:active,
+  .mobile-pedal:active,
+  .btn:active,
+  .setting-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 #000000;
+  }
+  
+  /* 移动端焦点样式 */
+  .music-btn:focus-visible,
+  .mobile-pedal:focus-visible,
+  .btn:focus-visible,
+  .setting-btn:focus-visible {
+    outline: 3px solid #007AFF;
+    outline-offset: 2px;
+  }
+}
 
 

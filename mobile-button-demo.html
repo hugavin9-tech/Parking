@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>移动端按钮组件演示</title>
+  <link rel="stylesheet" href="./mobile-button.css" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+      line-height: 1.6;
+    }
+    
+    .demo-section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .demo-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #333;
+    }
+    
+    .demo-description {
+      color: #666;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .demo-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .demo-row.horizontal-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      flex-wrap: nowrap;
+      padding-bottom: 8px;
+    }
+    
+    .demo-row.horizontal-scroll .mobile-btn {
+      flex-shrink: 0;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+    
+    .status-success { background: #d4edda; color: #155724; }
+    .status-error { background: #f8d7da; color: #721c24; }
+    .status-warning { background: #fff3cd; color: #856404; }
+    
+    .test-checklist {
+      background: #e3f2fd;
+      border: 1px solid #bbdefb;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+    
+    .test-checklist h3 {
+      margin: 0 0 12px 0;
+      color: #1976d2;
+    }
+    
+    .test-checklist ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    
+    .test-checklist li {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    @media (max-width: 480px) {
+      body { padding: 12px; }
+      .demo-section { padding: 16px; }
+      .demo-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-section">
+    <h2 class="demo-title">移动端按钮组件演示</h2>
+    <p class="demo-description">展示四种按钮样式：主要、次要、危险、幽灵</p>
+  </div>
+
+  <!-- 基础按钮样式 -->
+  <div class="demo-section">
+    <h3 class="demo-title">基础按钮样式</h3>
+    <p class="demo-description">四种基础样式变体</p>
+    
+    <div class="demo-grid">
+      <button class="mobile-btn primary" onclick="showStatus(this, '主要按钮')">
+        主要按钮
+      </button>
+      
+      <button class="mobile-btn secondary" onclick="showStatus(this, '次要按钮')">
+        次要按钮
+      </button>
+      
+      <button class="mobile-btn danger" onclick="showStatus(this, '危险按钮')">
+        危险按钮
+      </button>
+      
+      <button class="mobile-btn ghost" onclick="showStatus(this, '幽灵按钮')">
+        幽灵按钮
+      </button>
+    </div>
+  </div>
+
+  <!-- 按钮尺寸 -->
+  <div class="demo-section">
+    <h3 class="demo-title">按钮尺寸</h3>
+    <p class="demo-description">小、中、大三种尺寸</p>
+    
+    <div class="demo-row">
+      <button class="mobile-btn primary small" onclick="showStatus(this, '小按钮')">
+        小按钮
+      </button>
+      
+      <button class="mobile-btn primary" onclick="showStatus(this, '中按钮')">
+        中按钮
+      </button>
+      
+      <button class="mobile-btn primary large" onclick="showStatus(this, '大按钮')">
+        大按钮
+      </button>
+    </div>
+  </div>
+
+  <!-- 按钮状态 -->
+  <div class="demo-section">
+    <h3 class="demo-title">按钮状态</h3>
+    <p class="demo-description">正常、加载、禁用状态</p>
+    
+    <div class="demo-row">
+      <button class="mobile-btn primary" onclick="showStatus(this, '正常按钮')">
+        正常按钮
+      </button>
+      
+      <button class="mobile-btn primary loading" onclick="showStatus(this, '加载按钮')">
+        <span class="btn-text">加载按钮</span>
+      </button>
+      
+      <button class="mobile-btn primary" disabled onclick="showStatus(this, '禁用按钮')">
+        禁用按钮
+      </button>
+    </div>
+  </div>
+
+  <!-- 切换按钮 -->
+  <div class="demo-section">
+    <h3 class="demo-title">切换按钮</h3>
+    <p class="demo-description">支持 aria-pressed 状态的切换按钮</p>
+    
+    <div class="demo-row">
+      <button class="mobile-btn secondary" data-toggle onclick="toggleButton(this)">
+        切换按钮
+      </button>
+      
+      <button class="mobile-btn ghost" data-toggle onclick="toggleButton(this)">
+        幽灵切换
+      </button>
+    </div>
+  </div>
+
+  <!-- 按钮组布局 -->
+  <div class="demo-section">
+    <h3 class="demo-title">按钮组布局</h3>
+    <p class="demo-description">水平排列、垂直排列、水平滚动</p>
+    
+    <div class="mobile-btn-group horizontal">
+      <button class="mobile-btn primary" onclick="showStatus(this, '按钮1')">按钮1</button>
+      <button class="mobile-btn secondary" onclick="showStatus(this, '按钮2')">按钮2</button>
+      <button class="mobile-btn danger" onclick="showStatus(this, '按钮3')">按钮3</button>
+    </div>
+    
+    <div class="mobile-btn-group vertical" style="margin-top: 16px;">
+      <button class="mobile-btn primary" onclick="showStatus(this, '垂直1')">垂直按钮1</button>
+      <button class="mobile-btn secondary" onclick="showStatus(this, '垂直2')">垂直按钮2</button>
+    </div>
+    
+    <div class="mobile-btn-group horizontal-scroll" style="margin-top: 16px;">
+      <button class="mobile-btn primary" onclick="showStatus(this, '滚动1')">滚动按钮1</button>
+      <button class="mobile-btn secondary" onclick="showStatus(this, '滚动2')">滚动按钮2</button>
+      <button class="mobile-btn danger" onclick="showStatus(this, '滚动3')">滚动按钮3</button>
+      <button class="mobile-btn ghost" onclick="showStatus(this, '滚动4')">滚动按钮4</button>
+      <button class="mobile-btn primary" onclick="showStatus(this, '滚动5')">滚动按钮5</button>
+    </div>
+  </div>
+
+  <!-- 触控测试 -->
+  <div class="demo-section">
+    <h3 class="demo-title">触控测试</h3>
+    <p class="demo-description">测试单击、长按、快速连击</p>
+    
+    <div class="demo-row">
+      <button class="mobile-btn primary" onclick="testClick(this)">
+        单击测试
+      </button>
+      
+      <button class="mobile-btn secondary" onmousedown="startLongPress(this)" onmouseup="endLongPress(this)" ontouchstart="startLongPress(this)" ontouchend="endLongPress(this)">
+        长按测试
+      </button>
+      
+      <button class="mobile-btn danger" onclick="testRapidClick(this)">
+        连击测试
+      </button>
+    </div>
+  </div>
+
+  <!-- 测试清单 -->
+  <div class="test-checklist">
+    <h3>测试清单</h3>
+    <ul>
+      <li>✅ 触控命中区 ≥ 44×44 逻辑像素</li>
+      <li>✅ 去除移动端 300ms 点击延迟</li>
+      <li>✅ 明显的点按态（:active）与禁用态</li>
+      <li>✅ 支持 touchstart/pointerdown 反馈</li>
+      <li>✅ 按钮组在窄屏自动换行或走水平滚动</li>
+      <li>✅ 最小间距 8px</li>
+      <li>✅ 文本与图标自适应缩放</li>
+      <li>✅ 键盘无障碍可用</li>
+      <li>✅ 有 role="button" 和 aria-pressed</li>
+      <li>✅ 焦点环可见</li>
+      <li>✅ iOS 点击态无灰色高亮</li>
+      <li>✅ 支持"弱动效"系统设置</li>
+    </ul>
+  </div>
+
+  <script src="./mobile-button.js"></script>
+  <script>
+    let clickCount = 0;
+    let longPressTimer = null;
+    
+    function showStatus(button, message) {
+      const status = document.createElement('span');
+      status.className = 'status-indicator status-success';
+      status.textContent = '已点击';
+      
+      // 移除之前的状态
+      const existingStatus = button.querySelector('.status-indicator');
+      if (existingStatus) {
+        existingStatus.remove();
+      }
+      
+      button.appendChild(status);
+      
+      console.log(`${message} 被点击`);
+      
+      // 3秒后移除状态
+      setTimeout(() => {
+        if (status.parentNode) {
+          status.remove();
+        }
+      }, 3000);
+    }
+    
+    function toggleButton(button) {
+      const isPressed = button.getAttribute('aria-pressed') === 'true';
+      button.setAttribute('aria-pressed', (!isPressed).toString());
+      button.classList.toggle('pressed', !isPressed);
+      
+      showStatus(button, `切换按钮 ${!isPressed ? '激活' : '取消'}`);
+    }
+    
+    function testClick(button) {
+      showStatus(button, '单击测试');
+    }
+    
+    function startLongPress(button) {
+      longPressTimer = setTimeout(() => {
+        showStatus(button, '长按触发');
+      }, 500);
+    }
+    
+    function endLongPress(button) {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+    }
+    
+    function testRapidClick(button) {
+      clickCount++;
+      const now = Date.now();
+      
+      if (clickCount === 1) {
+        setTimeout(() => {
+          if (clickCount >= 3) {
+            showStatus(button, `快速连击 ${clickCount} 次`);
+          } else {
+            showStatus(button, `单击 ${clickCount} 次`);
+          }
+          clickCount = 0;
+        }, 1000);
+      }
+    }
+    
+    // 监听自定义事件
+    document.addEventListener('mobileButtonClick', (e) => {
+      console.log('移动端按钮点击事件:', e.detail);
+    });
+    
+    // 测试键盘导航
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        console.log('键盘导航测试');
+      }
+    });
+  </script>
+</body>
+</html>
